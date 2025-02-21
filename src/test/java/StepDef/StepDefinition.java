@@ -1,12 +1,16 @@
 package StepDef;
 
 import io.cucumber.java.en.*;
+
+import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.chrome.ChromeDriver;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -128,6 +132,92 @@ public class StepDefinition {
                 By.xpath("//span[normalize-space()='Submit']")));
         submitButton.click();
     }
+    @Given("I am on the View Locations page")
+    public void i_am_on_the_view_locations_page()  {
+        driver.switchTo().defaultContent();
+        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
+        for (WebElement iframe : iframes) {
+            driver.switchTo().frame(iframe);
+            if (!driver.findElements(By.xpath("//span[contains(@class,'layout-menuitem-text') and text()='View Locations']")).isEmpty()) {
+                break;
+            }
+            driver.switchTo().defaultContent();
+        }
+    }
+
+    
+
+    @Then("I should see the Pudo Locations table")
+    public void i_should_see_the_pudo_locations_table() {
+        WebElement table = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
+        Assert.assertTrue("Pudo Locations table is not visible", table.isDisplayed());
+    }
+
+    @Then("the table should have the following headers:")
+    public void the_table_should_have_the_following_headers(List<String> expectedHeaders){
+    	
+        // Define a mapping of column names to their XPath
+    	
+        Map<String, String> columnXpaths = new HashMap<>();
+        
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//th[normalize-space()='Actions']")));
+        
+        columnXpaths.put("Actions", "//div[normalize-space()='Actions']");
+        columnXpaths.put("PudoCode", "//div[normalize-space()='PudoCode']");
+        columnXpaths.put("PudoType", "//div[normalize-space()='PudoType']");
+        columnXpaths.put("Name", "//div[normalize-space()='Name']");
+        columnXpaths.put("Address1", "//div[normalize-space()='Address1']");
+        columnXpaths.put("CityTown", "//div[normalize-space()='CityTown']");
+        columnXpaths.put("PostCode", "//div[normalize-space()='PostCode']");
+        columnXpaths.put("County", "//div[normalize-space()='County']");
+        columnXpaths.put("Country", "//div[normalize-space()='Country']");
+        columnXpaths.put("Latitude", "//div[normalize-space()='Latitude']");
+        columnXpaths.put("Longitude", "//div[normalize-space()='Longitude']");
+        columnXpaths.put("TimeZone", "//div[normalize-space()='TimeZone']");
+        columnXpaths.put("Location Status", "//div[normalize-space()='Location Status']");
+        columnXpaths.put("Hardware Type", "//div[normalize-space()='Hardware Type']");
+        columnXpaths.put("what3Words", "//div[normalize-space()='what3Words']");
+        columnXpaths.put("LocationLink", "//div[normalize-space()='LocationLink']");
+        columnXpaths.put("IsActive", "//div[normalize-space()='IsActive']");
+        columnXpaths.put("AlwaysOpen", "//div[normalize-space()='AlwaysOpen']");
+        columnXpaths.put("OversizedAllowed", "//div[normalize-space()='OversizedAllowed']");
+        columnXpaths.put("Open24X7", "//div[normalize-space()='Open24X7']");
+
+        // Iterate over expected headers and check if they exist on the page
+        for (String header : expectedHeaders) {
+            String xpath = columnXpaths.get(header);
+            if (xpath == null) {
+                Assert.fail("No XPath defined for header: " + header);
+            }
+            
+            List<WebElement> elements = driver.findElements(By.xpath(xpath));
+            Assert.assertFalse("Header not found: " + header, elements.isEmpty());
+        }
+    }
+
+
+    @When("I check the locations table")
+    public void i_check_the_locations_table() {
+        WebElement table = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
+        Assert.assertTrue("Pudo Locations table is not visible", table.isDisplayed());
+    }
+
+    @Then("I should see at least one location entry")
+    public void i_should_see_at_least_one_location_entry() {
+        List<WebElement> rows = driver.findElements(By.xpath("//table//tr"));
+        Assert.assertTrue("No location entries found", rows.size() > 1);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     private By getLocator(String fieldName) {
         switch (fieldName) {
