@@ -1,7 +1,7 @@
 Feature: View Locations Page
 Scenario: Verify the View Locations page loads successfully
  Given I am on the View Locations page
- Then I should see the Pudo Locations table
+ Then I should see the Pudo Locations table data
 
   Scenario: Verify table headers in the View Locations page
     Given I am on the View Locations page
